@@ -1,0 +1,12 @@
+OG IMAGE PLACEHOLDER
+Size: 1200 x 630 pixels
+Format: PNG
+
+This file must be replaced with a real Open Graph image before launch.
+The image should show:
+- Fresh Start Community Services logo (white on green background)
+- Organization tagline
+- Clean, professional nonprofit design
+- Brand colors: #258C4F (green), #ADFF1C (lime accent), #FCFCFC (off-white)
+
+Until replaced, social media shares will not show a preview image.
