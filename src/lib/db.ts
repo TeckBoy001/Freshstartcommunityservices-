@@ -22,12 +22,14 @@ const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'fsc_database.json');
 
 function ensureDatabase(): FSCDatabase {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
   if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DATABASE, null, 2), 'utf-8');
+    try {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_DATABASE, null, 2), 'utf-8');
+    } catch (err) {
+      // Serverless filesystems (e.g. Netlify Functions) are read-only; fall back to seed data.
+      console.warn('Could not create fsc_database.json, using in-memory seed data', err);
+    }
     return INITIAL_DATABASE;
   }
 
@@ -45,10 +47,15 @@ export function getDatabase(): FSCDatabase {
 }
 
 export function saveDatabase(db: FSCDatabase): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
+  } catch (err) {
+    // Read-only serverless filesystem: changes cannot be persisted to the JSON file.
+    console.error('Failed to save fsc_database.json (read-only filesystem?)', err);
   }
-  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf-8');
 }
 
 // --- Organization ---
